@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EP AUG22PT</title>
+    <%- include('./partials/head.ejs') %>
+    <style>
+       body {
+        background-image: url('https://www.ggeedu.com/wp-content/uploads/2018/03/Noroff_logo_2_png-e1587992131892.png');
+        background-repeat: no-repeat;
+        background-position: center center; /* Center the background image horizontally and vertically */
+        background-attachment: fixed; /* Ensure the background image remains fixed while scrolling */
+        background-size: 50%; /* Remember!! Ensure the background image is fully contained within the body */
+       }
+       h1 {
+        position: absolute;
+        top: 20%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+        font-size: 36px;
+    }
+
+    h2 {
+        position: absolute;
+        top: 30%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+        font-size: 24px;
+    }
+    </style>
+</head>
+<body>
+    <%- include('./partials/navbar.ejs') %>
+    
+    <h1>Welcome to EP AUG22PT</h1>
+    <h2>Web Admin</h2>
+
+
+    
+    <%- include('./partials/scripts.ejs') %>
+</body>
+</html>
+

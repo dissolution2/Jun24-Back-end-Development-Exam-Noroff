@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <title>EP AUG22PT</title>
+    <style>
+        .custom-table{
+            background-color: #5b737f;
+        }
+        .table{
+            border: none;
+        }
+        .custom-table th,
+        .custom-table td {
+            background-color: #5b737f; /* Set the background color of th and td */
+            color: #000000; /* Set the text color of th and td */
+        }
+        select{
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc; 
+            background-color: #fff;
+        }
+        select:focus{
+            outline:none;
+            border-color: #007bff;
+        }
+        .modal-form-input-update{
+            width: 200px;
+        }
+        .modal-style-blue{
+            background: lightblue;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            document.querySelectorAll('.memberShip').forEach(button => {
+            button.addEventListener('click', function() {
+                console.log("Button clicked memberShip"); // Debug Line
+                const id = this.id; // Get the orderNumber from the button's id
+                console.log("memberShip: ", id); // Debug Line
+
+                const button_pressed = this.getAttribute('data-id');
+                console.log("button is:", button_pressed);
+
+
+                openModal(id, button_pressed);
+                });
+            });
+            // Make sure the modal hide
+            $(document).on('click', '.modal-backdrop', function () {
+                $('.modal').modal('hide')
+            });
+        });
+
+        function openModal(memberShipId,button_pressed) {
+            // Find the row corresponding to the productId
+            const row = document.getElementById(memberShipId).closest('tr');
+
+            const buttonOpensModal = button_pressed;
+
+
+            if(buttonOpensModal == 3){
+                console.log("button 3 only add new product!!");
+
+                try {
+                    
+                    const delete_button = document.getElementById('memeberShipNameDeleteSubmitButton');
+                    const update_button = document.getElementById('memeberShipNameUpdateSubmitButton');
+                    const add_button = document.getElementById('memeberShipAddSubitButton');
+
+
+                    const attrDisableUpdate = document.createAttribute("disabled");
+                    const attrDisableDelete = document.createAttribute("disabled");
+
+
+                    /* check if not have the attributes . sett them */
+                    if(!delete_button.hasAttribute('disabled')){
+                        delete_button.attributes.setAttributeNode(attrDisableDelete);
+                    }
+
+                    if(!update_button.hasAttribute('disabled')){
+                        update_button.setAttributeNode(attrDisableUpdate);
+                    }
+                    
+                    if(add_button.hasAttribute('disabled')){
+                        // remove it
+                        add_button.attributes.removeNamedItem('disabled');
+                    }
+
+
+
+                } catch (error) {
+                    console.log("err: ", error);
+                }
+            }
+
+
+            // remember to set the disabled  on the button as an attribute
+            if(buttonOpensModal == 2 ){
+                console.log("button 2 should be delete");
+                /* attributes explicitly */
+                try{
+                    /* craete attributes */
+                    const attrUppdate = document.createAttribute('disabled');
+                    const attrAdd = document.createAttribute('disabled');
+                    
+                    /* get buttons  */
+                    const delete_button = document.getElementById('memeberShipNameDeleteSubmitButton');
+
+                    const update_button = document.getElementById('memeberShipNameUpdateSubmitButton');
+                    const add_button = document.getElementById('memeberShipAddSubitButton');
+
+                    /* check if not have the attributes . sett them */
+                    if(delete_button.hasAttribute('disabled')){
+                        delete_button.attributes.removeNamedItem('disabled');
+                    }
+
+                    if(!update_button.hasAttribute('disabled')){
+                        update_button.setAttributeNode(attrUppdate);
+                    }
+                    
+                    if(!add_button.hasAttribute('disabled')){
+                        add_button.setAttributeNode(attrAdd);
+                    }
+                
+                }catch(err){
+                    console.log("catch err: ", err);
+                }
+            }
+            if(buttonOpensModal == 1 ){
+                console.log("button 1 should be update, add");
+                const disable_button = document.getElementById('memeberShipNameDeleteSubmitButton');
+                const attr = document.createAttribute("disabled");
+                try{
+                    if(!disable_button.hasAttribute('disabled')){
+                        disable_button.setAttributeNode(attr);
+                    }
+                    
+                    const update_button = document.getElementById('memeberShipNameUpdateSubmitButton');
+                    if(update_button.hasAttribute('disabled')){
+                        update_button.attributes.removeNamedItem('disabled');
+                    }
+
+                    const update_addbutton = document.getElementById('memeberShipAddSubitButton');
+                    if(update_addbutton.hasAttribute('disabled')){
+                        update_addbutton.attributes.removeNamedItem('disabled');
+                    }
+                }catch(err){
+                    console.log("catch err: ", err);
+                }
+            }
+
+            // Extract data from the row
+            const id = row.querySelector('td:nth-child(1)').innerText;
+            const name = row.querySelector('td:nth-child(2)').innerText;
+            const discount = row.querySelector('td:nth-child(3)').innerText;
+            console.log("id, ", id);
+            console.log("discount: ", discount);
+            // Populate modal with row data
+            document.getElementById('memberShipId').innerText = id; // Sett the head info
+            document.getElementById('updateId').value = id; // sett first hidden value
+            document.getElementById('addId').value = id; // sett first hidden value
+            document.getElementById('discount').value = discount; 
+            document.getElementById('deleteId').value = id;
+            document.getElementById('memberShipNameUpdate').value = name; // setts input text id="brandNameUpdate"
+            document.getElementById('memberShipNameDelete').value = name;
+            
+
+            const myModal = bootstrap.Modal.getOrCreateInstance('#memberShip');
+            window.addEventListener('DOMContentLoaded', () => {
+                myModal.show();
+            });
+        }
+    </script>
+    <!-- poppup.value 1 = admin Size Qury -->
+    <% if (locals.popup.value == 1) { %>
+        <script>
+          showAlert = function(n){
+            console.log(JSON.stringify(n));
+          alert('Info: \n' + JSON.stringify(n) );
+         }
+          // remember < % - escape raw html , the = set the values , but have to 
+          // JSON.stringify it both places !! read up 
+          var resultQ = <%-JSON.stringify(resultQ)%>;
+          if (resultQ!=null) {
+            showAlert(resultQ);
+          }
+        </script>
+       <% } %>
+    <%- include('./partials/head.ejs') %>
+    <link href="../../stylesheets/style.css" rel="stylesheet">
+</head>
+<body>
+<%- include('./partials/navbar.ejs') %>
+<br>
+<!-- Modal Update -->
+<div class="modal modal-lg fade" id="memberShip" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h2>
+                    MemberShip ID: <span id="memberShipId"></span>
+                </h2> 
+                <br>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+    <!-- Modal Body -->
+            <div class="modal-body modal-style-blue">
+                <br>
+                <span>Update | Add | Delete MemberShip: Fill in text box's (Change)</span>
+                <br>
+                
+                <form id="modalFormUpdate" action="/admin/memberships/update" method="post">
+                    <br>
+                    <span><h2>Update: MemberShip</h2></span>
+                    <br>
+                    <span>1. - Empty = no update, change box input to update item!!</span><br>
+                    <span>2. - EKS: Name: left Empty ="No update/change" Discount: input value ="Value to be updated"</span><br>
+
+                    <input hidden="true" type="text" id="updateId" name="updateId" readonly><br>
+                    <label class="modal-form-label-update" for="id">MemeberShip Name:</label><br>
+                    <input class="modal-form-input-update" type="text" id="memberShipNameUpdate" name="memberShipNameUpdate" readonly><br>
+                    
+
+                    <label class="modal-form-label-update" for="id">New: [MemberShip Name]</label><br>
+                    <input class="modal-form-input-update" type="text" id="newMemberShipName" name="newMemberShipName"><br>
+
+                    <label class="modal-form-label-update" for="id">Discount:</label><br>
+                    <input class="modal-form-input-update" type="text" id="discount" name="discount" readonly><br>
+
+                    <label class="modal-form-label-update" for="id">New: [Discount]</label><br>
+                    <input class="modal-form-input-update" type="number" min="0" max="100" id="newDiscount" name="newDiscount"><br>
+                </form>
+                <br>
+                <form id="modalFormAdd" action="/admin/memberships/add" method="post">
+                    <br>
+                    <span><h2>Add: MemberShip</h2></span>
+                    <br>
+                    <span>1. - Id on Gap in id row, next id is the first gap missing</span><br>
+                    <span>2. - Id no GAp in row, next Id = (Highest value of id + 1)</span><br>
+                    <span>3. - Sett Discount value on Admin's discretion!! [NO consideration on active MemberShip!!] </span><br>
+
+                    <input hidden="true" type="text" id="addId" name="addId" readonly><br>
+                    <label class="modal-form-label-update" for="id">MemeberShip Name:</label><br>
+                    <input class="modal-form-input-update" type="text" id="memeberShipNameAdd" name="memeberShipNameAdd" required><br>
+
+                    <label class="modal-form-label-update" for="id">Discount:</label><br>
+                    <input class="modal-form-input-update" type="number" min="0" max="100" id="memeberShipDiscountAdd" name="memeberShipDiscountAdd" required><br>
+                    
+                </form>
+                <br>
+                <form id="modalFormDelete" action="/admin/memberships/delete" method="post">
+                    <br>
+                    <span><h2>Delete: MemberShip</h2></span>
+                    <br>
+                    <span>1. - If Delete middel of a row [Id gap will acurre]</span><br>
+                    <span>2. - On next added MemberShip if a gap exist first gap in row is next Id</span><br>
+                    <span>3. - Else next Id = (Highest value of id + 1)</span><br>
+                    <input hidden="true" type="text" id="deleteId" name="deleteId" readonly><br>
+                    <label class="modal-form-label-update" for="id">NB -Delete MemberShip- Name:</label><br>
+                    <input class="modal-form-input-update" type="text" id="memberShipNameDelete" name="memberShipNameDelete" readonly><br>
+                        
+                </form>
+            </div>
+<!-- Modal Footer -->
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-primary" id="memeberShipNameUpdateSubmitButton" type="submit" form="modalFormUpdate" value="Submit">Update</button>
+                <button class="btn btn-success" id="memeberShipAddSubitButton" type="submit" form="modalFormAdd" value="Submit">Add</button>
+                <button class="btn btn-danger" id="memeberShipNameDeleteSubmitButton" type="submit" form="modalFormDelete" value="Submit">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+
+<br>
+<div class="container-fluid mt-5">
+    <h2 class="p-3 text-center">MemeberShip</h2>
+    <div class="list-group">
+    <div>
+        <span>Press in table: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+          </svg> : <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+          </svg> [ Update, Add, Delete] </span>
+        <table class="table table-bordered table-dark">
+            <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">MemberShip Name</th>
+                <th scope="col">Discount</th>
+                <th scope="col">Option</th>
+            </tr>
+            </thead>
+            <tbody>
+            <%if (locals.DataMemberShip) { %>
+                <% DataMemberShip.forEach(function(member) { %> 
+            <tr>
+                <td><%=member.memberId%></td>
+                <td><%=member.MemberShipName%></td>
+                <td><%=member.discount%></td>
+                <td><button class="btn-sm option-update memberShip" data-id="1" data-bs-toggle="modal" data-bs-target="#memberShip" id="<%=member.memberId%>"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                  </svg></button>
+                    <button class="btn-sm option-remove memberShip" data-id="2" data-bs-toggle="modal" data-bs-target="#memberShip" id="<%=member.memberId%>_remove"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                      </svg></button>
+                </td>
+            </tr>
+            <% }); %>
+            <%}%> 
+            </tbody>
+        </table>
+    </div>
+    </div>
+</div>
+
+<br>
+<br>
+<div class="container-fluid mt-5">
+    <h2 class="p-3 text-center">Users MemeberShip Status</h2>
+    <div class="list-group">
+    <div>
+        <span>Press in table: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+          </svg> : <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+          </svg> [ Update[NOT IMPLEMENTED], Add[NOT IMPLEMENTED], Delete[NOT IMPLEMENTED]] </span>
+        <table class="table table-bordered table-dark">
+            <thead>
+            <tr>
+                <th scope="col">User</th>
+                <th scope="col">UserName</th>
+                <th scope="col">MemberShip Id</th>
+                <th scope="col">MemberShip Name</th>
+                <th scope="col">Discount</th>
+                <th scope="col">PurchureHistory</th>
+                <th scope="col">Option</th>
+            </tr>
+            </thead>
+            <tbody>
+            <%if (locals.DataCollectionList) { %>
+                <% DataCollectionList.forEach(function(data) { %> 
+            <tr>
+                <td><%=data.userId%></td>
+                <td><%=data.userName%></td>
+                <td><%=data.memberId%></td>
+                <td><%=data.memberShipName%></td>
+                <td><%=data.discountValue%></td>
+                <td><%=data.purchureCount%></td>
+                <td><button class="btn-sm option-update " id="<%=data.userId%>"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                  </svg></button>
+                    <button class="btn-sm option-remove" id="<%=data.userId%>_remove"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                      </svg></button>
+                </td>
+            </tr>
+            <% }); %>
+            <%}%> 
+            </tbody>
+        </table>
+    </div>
+    </div>
+</div>
+<br>
+<br>
+<%- include('./partials/scripts.ejs') %>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

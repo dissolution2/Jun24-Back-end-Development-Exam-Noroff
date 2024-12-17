@@ -1,0 +1,1742 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "AUG22pt-ep1-dissolution2",
+    "description": "<b>Swagger Doc EP Noroff Backend API</b>."
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "securityDefinitions": {
+    "apiKeyAuth": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Authorization",
+      "scheme": "bearer",
+      "description": "Bearer token"
+    }
+  },
+  "paths": {
+    "/init/": {
+      "post": {
+        "tags": [
+          "Init"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": false,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, result: { message: \"Database synchronized, Admin Created and Tables: Role, MemberShip, Status Value default updated\"}"
+          },
+          "500": {
+            "description": "statusCode\": 500, result: {error: \"Error setting the database... !!\"}"
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "User register with firstName, lastName, userName, address, telephonenumber, email, password",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Register"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, result: { message: \"Your account has been crated!!\"\" }"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "User login with userName or email and password { userName: \"dissolution\", email: \"\", password: \"12345\" }",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LogIn"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "status: \"success\",   statusCode: 200,   data: {   result: \"You are logged in\",   email: \"test@test.com\",   name: \"dissolution\",   token: \"token generated...\"   }"
+          }
+        }
+      }
+    },
+    "/cart/": {
+      "get": {
+        "tags": [
+          "Cart"
+        ],
+        "description": "Admin get all Cart (including: softe deleted) User Get her/his Cart in the database [requires: token]",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, data: { result: \"product found\", products }"
+          },
+          "401": {
+            "description": "statusCode: 401, result: { error: \"Privileges Admin or user rights [Required] !!\"}"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Cart"
+        ],
+        "description": "User can Add proudcts to a Cart with productId, quantity [requires: token]",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CartPost"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, result: { message: \"product added to cart\" }"
+          },
+          "401": {
+            "description": "\"statusCode\": 401, result: { error: \"Privileges Admin or user rights [Required] !!\"} "
+          },
+          "404": {
+            "description": "statusCode: 404, result: { error: \"Product dont exist in database or quantity asked, larger then product is in stock\", input: productId or quantity }"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Cart"
+        ],
+        "description": "User can update/remove products set in the cart [requires: token]",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CartPut"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, data: { result: \"product removed from cart or product quantity updated to cart\"}"
+          },
+          "401": {
+            "description": "statusCode: 401, result: {error: \"Privileges Admin or user rights [Required] !!\"}"
+          },
+          "404": {
+            "description": "statusCode: 404, result: {error: \"\"Product dont exist in cart\", input: productId }"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Cart"
+        ],
+        "description": "User can remove products set in the cart [requires: token]",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CartDelete"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, data: { result: \"product removed from cart\"}"
+          },
+          "401": {
+            "description": "statusCode: 500, result: {error: \"Require productId, Not a integer value\", input: productId }"
+          },
+          "404": {
+            "description": "statusCode: 404, result: {error: \"\"Product dont exist in cart\", input: productId }"
+          }
+        }
+      }
+    },
+    "/cart/checkout": {
+      "post": {
+        "tags": [
+          "Cart"
+        ],
+        "description": "User can check out there cart, An Order is made of the proudcts in the Cart [requires: token]",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": false,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, data: { result: \"Order created\"}"
+          },
+          "403": {
+            "description": "statusCode: 401, result: {error: \"Privileges Admin or user rights [Required] !!\"}"
+          },
+          "404": {
+            "description": "statusCode: 404, result: {error: \"No product in cart\" }"
+          }
+        }
+      }
+    },
+    "/products/": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "description": "Guest, User or Admin, no restrictions. Can get all products",
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, data: { result: \"product found\", products }"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Products"
+        ],
+        "description": "Admin can add new product: productName, description, quantity, price, discount, imgUrl, categoryId, brandId",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProductsPost"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, result: { message: \"New product has been added to the database\" }"
+          },
+          "403": {
+            "description": "statusCode: 403, result: { error: \"Privileges Admin rights [Required] !!\"}"
+          },
+          "500": {
+            "description": "statusCode: 500, result: { error: \"Require categoryId or brandId, not in database create new Category or Brand\", input: categoryId or brandId }"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Products"
+        ],
+        "description": "Admin can update/change product { productId, productName, description, quantity, price, discount, imgUrl, categoryId, brandId }",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProductsPut"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, result: { message: \"Updated/Changed post\", updateObject: { true/false on updateded values } }"
+          },
+          "304": {
+            "description": "statusCode: 304, result: { message: \"No Updated/Changed to post done\", updateObject }"
+          },
+          "403": {
+            "description": "statusCode: 403, result: { error: \"Privileges Admin rights [Required] !!\"}"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Products"
+        ],
+        "description": "Admin can sett product (softe deleted)",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProductsDeleted"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, result: { message: \"Product has been set active(soft) in the database\" }"
+          },
+          "403": {
+            "description": "statusCode: 403, result: { error: \"Privileges Admin rights [Required] !!\"}"
+          },
+          "500": {
+            "description": "statusCode\": 500, result: { error: \"Error setting product active(soft undeleteing) product from the database... !!\"}"
+          }
+        }
+      }
+    },
+    "/products/{productId}": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "description": "User or Admin, no restrictions. Can get one product by Id",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "type": "number"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, data: { result: \"product found\", products }"
+          },
+          "500": {
+            "description": "statusCode\": 500, result: {error: \"Require productId, Not a integer value\", input: productId }"
+          }
+        }
+      }
+    },
+    "/orders/": {
+      "get": {
+        "tags": [
+          "Order"
+        ],
+        "description": "Admin get all orders, User get her/his orders [token required]",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, data: { orders: \"Orders found\", orders }"
+          },
+          "403": {
+            "description": "statusCode: 403, result: {error: \"Privileges Admin or user rights [Required] !!\"}"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Order"
+        ],
+        "description": "Admin update/change order status [token required]",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OrderPut"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, data: { result: \"Orders to be updated\", updateOrderList, orderList }"
+          },
+          "403": {
+            "description": "statusCode: 403, result: {error: \"Privileges Admin or user rights [Required] !!\"}"
+          },
+          "500": {
+            "description": "statusCode: 500, result: { error: \"Require statusId, Not a integer value, value between 1 - 3\", input: statusId }"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Order"
+        ],
+        "description": "Admin can delete a Order by OrderNumber (All tables that are created must have CRUD endpoints)",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OrderDelete"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode\": 200, data: { result: \"Order deleted from database\"}"
+          },
+          "403": {
+            "description": "statusCode\": 403, result: {error: \"Privileges Admin rights [Required] !!\"}"
+          },
+          "404": {
+            "description": "statusCode\": 404 data: { error: \"OrderNumber not found\", input: orderNumber }"
+          },
+          "500": {
+            "description": "statusCode\": 500, result: {error: \"Require orderNumber\", input: orderNumber }"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "description": "Admin can change a cart to an Order. -Orders are usally Made throue /cart/checkout !! extra !!",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OrderPost"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, data: { result: \"Order created\"}"
+          },
+          "403": {
+            "description": "statusCode: 403, result: {error: \"Privileges Admin rights [Required] !!\"}"
+          },
+          "404": {
+            "description": "statusCode: 404, result: {error: \"No product in cart\" }"
+          },
+          "500": {
+            "description": "statusCode: 500, result: { email: \"Email is required, check format.\"}"
+          }
+        }
+      }
+    },
+    "/brands/": {
+      "get": {
+        "tags": [
+          "Brands"
+        ],
+        "description": "Get all Brands in the database",
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, data: { result: \"brands found\", brands }"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Brands"
+        ],
+        "description": "Admin can Add new Brand [requires: token]",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BrandPost"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, result: { message: \"New brand has been added to the database\", input: brandName }"
+          },
+          "403": {
+            "description": "statusCode: 403, result: { error: \"Privileges Admin rights [Required] !!\"}"
+          },
+          "500": {
+            "description": "statusCode: 500, result: { error: \"brandName allready exist\", input: categoryName }"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Brands"
+        ],
+        "description": "Admin can update/change Brand with brandName, newBrandName [requires: token]",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BrandPut"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, result: { message: \"brandName has been updated\", input: brandName }"
+          },
+          "403": {
+            "description": "statusCode: 403, result: { error: \"Privileges Admin rights [Required] !!\"}"
+          },
+          "500": {
+            "description": "statusCode: 500, result: { error: \"brandName allready exist\", input: categoryName }"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Brands"
+        ],
+        "description": "Admin can delete Brand with brandName [requires: token]",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BrandDelete"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, result: { message: \"brandName has been deleted\", input: brandName }"
+          },
+          "403": {
+            "description": "statusCode: 403, result: { error: \"Privileges Admin rights [Required] !!\"}"
+          },
+          "404": {
+            "description": "statusCode: 500, result: { error: \"brand dont exist in database\", input: brandName }"
+          }
+        }
+      }
+    },
+    "/categories/": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "description": "Get all Categorys in the database",
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, data: { result: \"category found\", category }"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Categories"
+        ],
+        "description": "Admin can Add a Category to the database [requires: token]",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CategoryPost"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, result: { message: \"New category has been added to the database\", input: categoryName }"
+          },
+          "403": {
+            "description": "statusCode: 401, result: {error: \"Privileges Admin rights [Required] !!\"}"
+          },
+          "500": {
+            "description": "statusCode: 500, result: {error: \"categoryName allready exist\", input: categoryName }"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Categories"
+        ],
+        "description": "Update/Change a Category to the database",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CategoryPut"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, result: { message: \"categoryName has been updated\", input: newCategoryName }"
+          },
+          "403": {
+            "description": "statusCode: 401, result: { error: \"Privileges Admin rights [Required] !!\"}"
+          },
+          "500": {
+            "description": "statusCode: 500, result: { error: \"categoryName dont exist\", input: categoryName }"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Categories"
+        ],
+        "description": "Delete a Category from the database",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CategoryDelete"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, result: { message: \"categoryName has been deleted\", input: categoryName }"
+          },
+          "403": {
+            "description": "statusCode: 403, result: { error: \"Privileges Admin rights [Required] !!\"}"
+          },
+          "500": {
+            "description": "statusCode\": 500, result: { error: \"category is associated with products, restricted for delete\", input: categoryName }"
+          }
+        }
+      }
+    },
+    "/membership/": {
+      "get": {
+        "tags": [
+          "MemberShip"
+        ],
+        "description": "Admin get All Memberships and data on users. Users get there Own data: {userId, userName, memberShipName, discount ,purchureHistory}",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, data: { membership: memberShip, DataCollectionList: DataCollectionList }"
+          },
+          "403": {
+            "description": "statusCode: 403, result: {error: \"Privileges Admin or user rights [Required] !!\"}"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "MemberShip"
+        ],
+        "description": "Admin Add new Memberships: On index Gap: new membership use gap, else Highest index + 1 NB ! no consideration on Discount value Admins dicretion ",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MemberShipPost"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, result: { message: \"New memberShip has been added to the database\", memberShip: memberShip }"
+          },
+          "403": {
+            "description": "statusCode: 403, result: { error: \"Privileges Admin rights [Required] !!\"}"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "MemberShip"
+        ],
+        "description": "Admin Update/change Memberships",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MemberShipPut"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, result: { message: \"memberShip has been updated/changed\", memberShip: memberShip }"
+          },
+          "400": {
+            "description": "statusCode: 400, result: { message: \"No Updated/Changed to post done\", updateObject }"
+          },
+          "403": {
+            "description": "statusCode: 403, result: { error: \"Privileges Admin rights [Required] !!\"}"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "MemberShip"
+        ],
+        "description": "Admin Delete Memberships if not in use",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MemberShipDelete"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, result: { message: \"Removed MemeberShip from database!!\" }"
+          },
+          "403": {
+            "description": "statusCode: 403, result: { error: \"Privileges Admin rights [Required] !!\"}"
+          },
+          "500": {
+            "description": "statusCode: 500, result: { message: \"Delete restricted, MemeberShip in use..\" }"
+          }
+        }
+      }
+    },
+    "/search/": {
+      "post": {
+        "tags": [
+          "Search"
+        ],
+        "description": " 'Any user can Search. Admin can Search (Webadmin) or User/guest on example a (Product webpage) on partial product name example: {\"product\": \"a\", \"categoryName\": \"\", \"brandName\": \"\"} <br>   Search only on category: {\"product\": \"\", \"categoryName\": \"TVs\", \"brandName\": \"\" } <br>   Search only on brand: {\"product\": \"\", \"categoryName\": \"\", \"brandName\": \"Samsung\"}' <br>",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Search"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, data: { result: \"product found\", products, count: products.length }"
+          },
+          "500": {
+            "description": "statusCode: 500, result: {error: \"Require productName or categoryName or brandName\", productName: productName, categoryName: categoryName, brandName: brandName }"
+          }
+        }
+      }
+    },
+    "/users/": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Admin get all Users with there History. User logged inn, se there DataHistory",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, data: { users: \"users found\", users, DataHistory: DataHistory }"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "This is not Implemented her, User are registrated with /Auth/Registrate",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": false,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "statusCode\": 403, result: {error: \"Privileges Admin rights [Required] !!\"}"
+          },
+          "500": {
+            "description": "statusCode\": 500, result: {error: \"POST for Users is not implemented\"}"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Admin can change/update User Privileges to Admin: \"Rights\" or Back to User: \"Rights\"",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UsersPut"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, result: { message: \"User privileges updated\" }"
+          },
+          "403": {
+            "description": "statusCode: 403, result: { error: \"Privileges Admin rights [Required] !!\"}"
+          },
+          "500": {
+            "description": "statusCode\": 500, result: { error: \"Privileges On Admin cant be changed!!\"}"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Admin can Delete user. Senario: User is not active, havent bouth anything - no history",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UsersDelete"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, result: { message: \"User is deleted from the database..\" }"
+          },
+          "403": {
+            "description": "statusCode: 403, result: { error: \"Privileges Admin rights [Required] !!\"}"
+          },
+          "500": {
+            "description": "statusCode\": 500, result: { error: \"User is active, restricted to delete..\"}"
+          }
+        }
+      }
+    },
+    "/roles/": {
+      "get": {
+        "tags": [
+          "Role"
+        ],
+        "description": "Admin get all roles in the database",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, data: { roles: \"Roles found\", roles }"
+          },
+          "403": {
+            "description": "statusCode: 403, result: {error: \"Privileges Admin rights [Required] !!\"}"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Role"
+        ],
+        "description": "All tables that are created must have CRUD endpoinst - Not implemented",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "statusCode\": 403, result: {error: \"Privileges Admin rights [Required] !!\"}"
+          },
+          "500": {
+            "description": "statusCode\": 500, result: {error: \"POST for Roles is not implemented\"}"
+          }
+        },
+        "deprecated": true
+      },
+      "put": {
+        "tags": [
+          "Role"
+        ],
+        "description": "All tables that are created must have CRUD endpoinst - Not implemented",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "statusCode\": 403, result: {error: \"Privileges Admin rights [Required] !!\"}"
+          },
+          "500": {
+            "description": "statusCode\": 500, result: {error: \"PUT for Roles is not implemented\"}"
+          }
+        },
+        "deprecated": true
+      },
+      "delete": {
+        "tags": [
+          "Role"
+        ],
+        "description": "All tables that are created must have CRUD endpoinst - Not implemented",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "statusCode\": 403, result: {error: \"Privileges Admin rights [Required] !!\"}"
+          },
+          "500": {
+            "description": "statusCode\": 500, result: {error: \"DELETE for Roles is not implemented\"}"
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/history/": {
+      "get": {
+        "tags": [
+          "UserHistoryDiscount"
+        ],
+        "description": "Admin get all UserHistory (bouth products)",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, data: { result: \"users found\", userHistory }"
+          },
+          "500": {
+            "description": "statusCode\": 401, result: {error: \"Privileges Admin rights [Required] !!\"}"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "UserHistoryDiscount"
+        ],
+        "description": "Admin can created user History if not created or user dont exist. NB Initially used in /cart/checkout",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserHistoryPost"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, data: { result: \"Users History created\"}"
+          },
+          "403": {
+            "description": "statusCode: 403, result: { error: \"Privileges Admin rights [Required] !!\"}"
+          },
+          "404": {
+            "description": "statusCode: 404, result: { error: \"User not found!!\", input: userId}"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "UserHistoryDiscount"
+        ],
+        "description": "Admin Update/change UserHistory (bouth products), can be used to test MemberShip Discount. NB(change history up to next level of MemberShip example 0 - 15, change to 15. next buy will give next memeberShip)",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserHistoryPut"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, data: { result: \"User history updated\" }"
+          },
+          "401": {
+            "description": "statusCode: 401, data: { error: \"User restricted\", input: userId }"
+          },
+          "403": {
+            "description": "statusCode: 403, result: { error: \"Privileges Admin rights [Required] !!\" }"
+          },
+          "500": {
+            "description": "statusCode\": 500, result: {error: \"Require userId, check format\", input: userId }"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "UserHistoryDiscount"
+        ],
+        "description": "Admin can resett the User History",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserHistoryDelete"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "statusCode: 200, data: { result: \"Users History resetted\" }"
+          },
+          "403": {
+            "description": "statusCode: 403, result: { error: \"Privileges Admin rights [Required] !!\"}"
+          },
+          "404": {
+            "description": "statusCode: 404, result: { error: \"User discount not found, not resetted\", input: userId }"
+          },
+          "500": {
+            "description": "statusCode: 500, result: { error: \"Require userId, Not a integer value\", input: userId }"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Register": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "example": "Robin"
+        },
+        "lastName": {
+          "type": "string",
+          "example": "larsen"
+        },
+        "userName": {
+          "type": "string",
+          "example": "dissolution"
+        },
+        "address": {
+          "type": "string",
+          "example": "onlin"
+        },
+        "telephonenumber": {
+          "type": "string",
+          "example": "45"
+        },
+        "email": {
+          "type": "string",
+          "example": "test@test.com"
+        },
+        "password": {
+          "type": "string",
+          "example": "12345"
+        }
+      },
+      "required": [
+        "firstName",
+        "lastName",
+        "userName",
+        "address",
+        "telephonenumber",
+        "email",
+        "password"
+      ]
+    },
+    "LogIn": {
+      "type": "object",
+      "properties": {
+        "userName": {
+          "type": "string",
+          "example": ""
+        },
+        "email": {
+          "type": "string",
+          "example": "admin@noroff.no"
+        },
+        "password": {
+          "type": "string",
+          "example": "P@ssword2023"
+        }
+      },
+      "required": [
+        "userName",
+        "email",
+        "password"
+      ]
+    },
+    "BrandPost": {
+      "type": "object",
+      "properties": {
+        "brandName": {
+          "type": "string",
+          "example": "NewBrandName"
+        }
+      },
+      "required": [
+        "brandName"
+      ]
+    },
+    "BrandPut": {
+      "type": "object",
+      "properties": {
+        "brandName": {
+          "type": "string",
+          "example": "NewBrandName"
+        },
+        "newBrandName": {
+          "type": "string",
+          "example": "updatedBrandName"
+        }
+      },
+      "required": [
+        "brandName",
+        "newBrandName"
+      ]
+    },
+    "BrandDelete": {
+      "type": "object",
+      "properties": {
+        "brandName": {
+          "type": "string",
+          "example": "updatedBrandName"
+        }
+      },
+      "required": [
+        "brandName"
+      ]
+    },
+    "CartPost": {
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "number",
+          "example": 1
+        },
+        "quantity": {
+          "type": "number",
+          "example": 1
+        }
+      },
+      "required": [
+        "productId",
+        "quantity"
+      ]
+    },
+    "CartPut": {
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "number",
+          "example": 1
+        },
+        "quantity": {
+          "type": "number",
+          "example": 1
+        }
+      },
+      "required": [
+        "productId",
+        "quantity"
+      ]
+    },
+    "CartDelete": {
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "number",
+          "example": 1
+        }
+      },
+      "required": [
+        "productId"
+      ]
+    },
+    "CategoryPost": {
+      "type": "object",
+      "properties": {
+        "categoryName": {
+          "type": "string",
+          "example": "categoryName"
+        }
+      },
+      "required": [
+        "categoryName"
+      ]
+    },
+    "CategoryPut": {
+      "type": "object",
+      "properties": {
+        "categoryName": {
+          "type": "string",
+          "example": "categoryName"
+        },
+        "newCategoryName": {
+          "type": "string",
+          "example": "newCategoryName"
+        }
+      },
+      "required": [
+        "categoryName",
+        "newCategoryName"
+      ]
+    },
+    "CategoryDelete": {
+      "type": "object",
+      "properties": {
+        "categoryName": {
+          "type": "string",
+          "example": "newCategoryName"
+        }
+      },
+      "required": [
+        "categoryName"
+      ]
+    },
+    "MemberShipPost": {
+      "type": "object",
+      "properties": {
+        "memberShipName": {
+          "type": "string",
+          "example": "Extra Virgine"
+        },
+        "discount": {
+          "type": "number",
+          "example": 45
+        }
+      },
+      "required": [
+        "memberShipName",
+        "discount"
+      ]
+    },
+    "MemberShipPut": {
+      "type": "object",
+      "properties": {
+        "memberId": {
+          "type": "number",
+          "example": 4
+        },
+        "newMemberShipName": {
+          "type": "string",
+          "example": "Silver Upgraded"
+        },
+        "newDiscount": {
+          "type": "number",
+          "example": 50
+        }
+      },
+      "required": [
+        "memberId",
+        "newMemberShipName",
+        "newDiscount"
+      ]
+    },
+    "MemberShipDelete": {
+      "type": "object",
+      "properties": {
+        "memberId": {
+          "type": "number",
+          "example": 4
+        },
+        "memberShipName": {
+          "type": "string",
+          "example": "Silver Upgraded"
+        }
+      },
+      "required": [
+        "memberId",
+        "memberShipName"
+      ]
+    },
+    "OrderPut": {
+      "type": "object",
+      "properties": {
+        "orderNumber": {
+          "type": "string",
+          "example": "uuid-string"
+        },
+        "statusId": {
+          "type": "number",
+          "example": 1
+        }
+      },
+      "required": [
+        "orderNumber",
+        "statusId"
+      ]
+    },
+    "OrderPost": {
+      "type": "object",
+      "properties": {
+        "userEmail": {
+          "type": "string",
+          "example": "test@test.no"
+        }
+      },
+      "required": [
+        "userEmail"
+      ]
+    },
+    "OrderDelete": {
+      "type": "object",
+      "properties": {
+        "orderNumber": {
+          "type": "string",
+          "example": "uud-string"
+        }
+      },
+      "required": [
+        "orderNumber"
+      ]
+    },
+    "ProductsPost": {
+      "type": "object",
+      "properties": {
+        "productName": {
+          "type": "string",
+          "example": "Test_Product_Swagger"
+        },
+        "description": {
+          "type": "string",
+          "example": "A prosject API"
+        },
+        "quantity": {
+          "type": "number",
+          "example": 1
+        },
+        "price": {
+          "type": "number",
+          "example": 100
+        },
+        "discount": {
+          "type": "number",
+          "example": 0
+        },
+        "imgUrl": {
+          "type": "string",
+          "example": "http://notareal.png"
+        },
+        "categoryId": {
+          "type": "number",
+          "example": 1
+        },
+        "brandId": {
+          "type": "number",
+          "example": 1
+        }
+      },
+      "required": [
+        "productName",
+        "description",
+        "quantity",
+        "price",
+        "discount",
+        "imgUrl",
+        "categoryId",
+        "brandId"
+      ]
+    },
+    "ProductsPut": {
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "number",
+          "example": 1
+        },
+        "productName": {
+          "type": "string",
+          "example": "iPhone 6s Plus 16Gb"
+        },
+        "description": {
+          "type": "string",
+          "example": "3D Touch. 12MP photos. 4K video."
+        },
+        "quantity": {
+          "type": "number",
+          "example": 10
+        },
+        "price": {
+          "type": "number",
+          "example": 749
+        },
+        "discount": {
+          "type": "number",
+          "example": 0
+        },
+        "imgUrl": {
+          "type": "string",
+          "example": "http://images.restapi.co.za/products/product-iphone.png"
+        },
+        "categoryId": {
+          "type": "number",
+          "example": 1
+        },
+        "brandId": {
+          "type": "number",
+          "example": 1
+        }
+      },
+      "required": [
+        "productId",
+        "productName",
+        "description",
+        "quantity",
+        "price",
+        "discount",
+        "imgUrl",
+        "categoryId",
+        "brandId"
+      ]
+    },
+    "ProductsDeleted": {
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "number",
+          "example": 1
+        },
+        "isdeleted": {
+          "type": "number",
+          "example": 1
+        }
+      },
+      "required": [
+        "productId",
+        "isdeleted"
+      ]
+    },
+    "Search": {
+      "type": "object",
+      "properties": {
+        "productName": {
+          "type": "string",
+          "example": "a"
+        },
+        "categoryName": {
+          "type": "string",
+          "example": ""
+        },
+        "brandName": {
+          "type": "string",
+          "example": ""
+        }
+      },
+      "required": [
+        "productName",
+        "categoryName",
+        "brandName"
+      ]
+    },
+    "UsersPut": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "number",
+          "example": 2
+        },
+        "roleName": {
+          "type": "string",
+          "example": "Admin"
+        }
+      },
+      "required": [
+        "userId",
+        "roleName"
+      ]
+    },
+    "UsersDelete": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "number",
+          "example": 2
+        }
+      },
+      "required": [
+        "userId"
+      ]
+    },
+    "UserHistoryPut": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "number",
+          "example": 2
+        },
+        "updateHistory": {
+          "type": "number",
+          "example": 15
+        }
+      },
+      "required": [
+        "userId",
+        "updateHistory"
+      ]
+    },
+    "UserHistoryPost": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "number",
+          "example": 2
+        }
+      },
+      "required": [
+        "userId"
+      ]
+    },
+    "UserHistoryDelete": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "number",
+          "example": 2
+        }
+      },
+      "required": [
+        "userId"
+      ]
+    }
+  },
+  "security": [
+    {
+      "apiKeyAuth": []
+    }
+  ]
+}

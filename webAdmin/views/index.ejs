@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <%- include('./partials/head.ejs') %>
+      <link href="../../stylesheets/login.css" rel="stylesheet">
+      <title>EP AUG22PT</title>
+      <style>
+       body {
+        background-image: url('https://miro.medium.com/v2/resize:fit:940/1*YW9N3wbkhZ7DoiJIxVGgZw.png');
+        background-repeat: no-repeat;
+        background-position: center center; 
+        background-attachment: fixed; 
+        background-size: 100%; 
+       }
+      </style>
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+          const inputs = document.querySelectorAll('.inputBox input');
+          inputs.forEach(input => {
+            input.addEventListener('input', function() {
+              const parent = input.parentElement;
+              if (input.value.trim() !== '') {
+                parent.classList.add('has-value');
+              } else {
+                parent.classList.remove('has-value');
+              }
+            });
+          });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('.form');
+        const submitBtn = form.querySelector('.submit-btn');
+        
+        // Function to check if all form fields are valid
+        function checkValidity() {
+            const inputs = form.querySelectorAll('input[required]'); // easy validation holds value
+            let allValid = true;
+            inputs.forEach(input => {
+            if (!input.validity.valid) {
+                allValid = false;
+            }
+            });
+            return allValid;
+        }
+        // Function to update button color based on form validity
+        function updateButtonColor() {
+            if (checkValidity()) {
+            submitBtn.style.backgroundColor = '#4CAF50'; // Green color if all fields are valid
+            } else {
+            submitBtn.style.backgroundColor = '#ff4d4d'; // Red color if any field is invalid
+            }
+        }
+        // Update button color on form input
+        form.addEventListener('input', updateButtonColor);
+        });
+          </script>
+      
+       <!-- poppup.value 1 = admin Size Qury -->
+      <% if (locals.popup.value == 1) { %>
+        <script>
+          showAlert = function(n){
+            console.log(JSON.stringify(n));
+          alert('Info: \n' + JSON.stringify(n) );
+        }
+          // remember < % - escape raw html , the = set the values , but have to 
+          // JSON.stringify it both places !! read up 
+          var resultQ = <%-JSON.stringify(resultQ)%>;
+          if (resultQ!=null) {
+            showAlert(resultQ);
+          }
+        </script>
+      <% } %>
+      </head>
+    <body>
+      <!-- < %- include('./partials/navbar.ejs') %> -->
+        <div class="messages">
+        <p>
+            <!-- if (messages.error) { 
+                <h1> messages.error </h1>
+             } -->
+        </p>
+    </div>
+        <section class="prompt">
+            <h1>Web Admin EP AGUST22PT</h1>
+            <!-- <form action="/login/password" method="post" autocomplete="off"> -->
+              <form class="form" action="/admin/auth/login" method="post" autocomplete="off">
+                <br>
+                <section class="inputBox">
+                    <label for="userNameORemail">Username or @Email</label>
+                    <input type="userNameORemail" id="userNameORemail" name="userNameORemail" autofocus required>
+                </section>
+              <br>
+                <section class="inputBox">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" autofocus required>
+                </section>
+                <button class="submit-btn" type="submit" onclick="this.removeAttribute('password');" >Sign in</button>
+            </form>
+        </section>
+    </body>
+</html>

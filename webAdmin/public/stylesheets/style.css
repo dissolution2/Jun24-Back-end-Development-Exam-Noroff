@@ -1,0 +1,154 @@
+/* Google Fonts - Poppins */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+/** product.ejs */
+.custom-table{
+  background-color: #5b737f;
+}
+.custom-table th,
+.custom-table td {
+  background-color: #5b737f; /* Set the background color of th and td */
+  color: #000000; /* Set the text color of th and td */
+}
+select{
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: 1px solid #ccc; 
+  background-color: #fff;
+}
+select:focus{
+  outline:none;
+  border-color: #007bff;
+}
+/** product.ejs */
+
+body {
+  background: #5b737f;
+}
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 15px 200px;
+  background: #853838;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.nav,
+.nav .nav-links {
+  display: flex;
+  align-items: center;
+}
+.nav {
+  justify-content: space-between;
+}
+a {
+  color: #fff;
+  text-decoration: none;
+}
+.nav .logo {
+  font-size: 22px;
+  font-weight: 500;
+}
+.nav .nav-links {
+  column-gap: 20px;
+  list-style: none;
+}
+.nav .nav-links a {
+  transition: all 0.2s linear;
+}
+
+.add{
+  display: block;
+  padding: 10px;
+  width: 100%;
+  border-radius: 3px;
+  background: #0d3b02;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+}
+
+.clear{
+  display: block;
+  padding: 10px;
+  width: 100%;
+  border-radius: 3px;
+  background: #a1790b;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+}
+
+.serach{
+  display: block;
+  padding: 10px;
+  width: 100%;
+  border-radius: 3px;
+  background: #110579;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+}
+
+.option-update{
+  display: block;
+  padding: 0.5em 1em;
+  border-radius: 0.3em;
+  background: #048825;
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+}
+
+.option-remove{
+  display: block;
+  padding: 0.5em 1em;
+  border-radius: 0.3em;
+  background: #6b0101;
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+}
+
+a.button {
+  box-sizing: border-box;
+  display: block;
+  padding: 10px;
+  width: 100%;
+  border-radius: 3px;
+  background: #000;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+}
+
+button:hover {
+  background-color: #e28063;
+}
+a.button {
+  box-sizing: border-box;
+  display: block;
+  padding: 10px;
+  width: 100%;
+  border-radius: 3px;
+  background: #000;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+}

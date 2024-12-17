@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EP AUG22PT</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    
+    <style>
+        .custom-table{
+            background-color: #5b737f;
+        }
+        .table{
+            border: none;
+        }
+        .custom-table th,
+        .custom-table td {
+            background-color: #5b737f; /* Set the background color of th and td */
+            color: #000000; /* Set the text color of th and td */
+        }
+        .input-box{
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        select{
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc; 
+            background-color: #fff;
+        }
+        select:focus{
+            outline:none;
+            border-color: #007bff;
+        }
+
+        
+                /** modal update */
+                .modal-style-blue{
+                    background: lightblue;
+                }
+
+                .modal-style-green{
+                    background: rgb(90, 196, 99);
+                }
+
+                .modal-style-red{
+                    background: red;
+                }
+
+                .modal-form-label-update{
+                    width: 150px;
+                }
+
+                .modal-form-input-update{
+                    width: 600px;
+                }
+
+                .modal-form-label-delete{
+                    width: 150px;
+                }
+
+                .modal-form-input-delete{
+                    width: 100px;
+                
+                }
+
+                /* Add styles to the form container */
+                .form-container {
+                max-width: 300px;
+                padding: 10px;
+                background-color: white;
+                }
+
+                /* Full-width input fields */
+                .form-container input[type=text], .form-container input[type=password] {
+                width: 100%;
+                padding: 15px;
+                margin: 5px 0 22px 0;
+                border: none;
+                background: #f1f1f1;
+                }
+
+                /* When the inputs get focus, do something */
+                .form-container input[type=text]:focus, .form-container input[type=password]:focus {
+                background-color: #ddd;
+                outline: none;
+                }
+
+                /* Set a style for the submit/login button */
+                .form-container .btn {
+                background-color: #04AA6D;
+                color: white;
+                padding: 16px 20px;
+                border: none;
+                cursor: pointer;
+                width: 100%;
+                margin-bottom:10px;
+                opacity: 0.8;
+                }
+
+                /* Add a red background color to the cancel button */
+                .form-container .cancel {
+                background-color: red;
+                }
+
+                /* Add some hover effects to buttons */
+                .form-container .btn:hover, .open-button:hover {
+                opacity: 1;
+                }
+    </style>
+    <script>
+        function syncDropdowns(selectedDropdown) {
+        const otherDropdowns = document.querySelectorAll('select'); // 'select' '.brand, select.category'
+        otherDropdowns.forEach(dropdown => {
+            if (dropdown !== selectedDropdown) {
+                dropdown.value = 'empty';
+                //dropdown.value = " ";
+            }
+        });
+            if(selectedDropdown.id === 'category'){
+                document.getElementById('categoryName').value = selectedDropdown.value;
+                //console.log('Category value set to:', selectedDropdown.value);
+            }else if(selectedDropdown.id === 'brand'){
+                document.getElementById('brandName').value = selectedDropdown.value;
+                //console.log('Brand value set to:', selectedDropdown.value);
+            }
+        }
+
+    </script>
+    <!-- poppup.value 1 = admin Size Qury -->
+    <% if (locals.popup.value == 1) { %>
+        <script>
+          showAlert = function(n){
+            console.log(JSON.stringify(n));
+          alert('Info: \n' + JSON.stringify(n) );
+         }
+          // remember < % - escape raw html , the = set the values , but have to 
+          // JSON.stringify it both places !! read up 
+          var resultQ = <%-JSON.stringify(resultQ)%>;
+          if (resultQ!=null) {
+            showAlert(resultQ);
+          }
+        </script>
+       <% } %>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            document.querySelectorAll('.ModalUpdateClick').forEach(button => {
+            button.addEventListener('click', function() {
+                console.log("Button clicked ModalUpdateClicked"); // Debug Line
+                const productId = this.id; // Get the productId from the button's id
+                console.log("productId: ", productId); // Debug Line
+                openModalUpdate(productId);
+                });
+            });
+            // Make sure the modal hide
+            $(document).on('click', '.modal-backdrop', function () {
+                $('.modal').modal('hide')
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll('.ModalDeleteClick').forEach(button => {
+            button.addEventListener('click', function() {
+                console.log("Button clicked ModalDeleteClicked"); // Debug Line
+                const productIdModalUpdate = this.id; // Get the productId from the button's id
+                console.log("productId: ", productIdModalUpdate); // Debug Line
+                openModalDelete(productIdModalUpdate);
+                });
+            });
+
+            // Make sure the modal hide
+            $(document).on('click', '.modal-backdrop', function () {
+                $('.modal').modal('hide')
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll('.ModalAddClick').forEach(button => {
+            button.addEventListener('click', function() {
+                console.log("Button clicked ModalAddClicked"); // Debug Line
+                // const productId = this.id; // Get the productId from the button's id
+                // console.log("productId: ", productId); // Debug Line
+                openModalAdd();
+                });
+            });
+
+            // Make sure the modal hide
+            $(document).on('click', '.modal-backdrop', function () {
+                $('.modal').modal('hide')
+            });
+        });
+        
+        function openModalUpdate(productIdModalUpdate) {
+        // Find the row corresponding to the productId
+        console.log("id openModalUpdate passes to row!: ", productIdModalUpdate);
+        const row = document.getElementById(productIdModalUpdate).closest('tr'); //todo: getting wrong id sometime ??
+        
+        
+        // Extract data from the row
+        const modalUpdate_id = row.querySelector('td:nth-child(1)').innerText;
+        const modalUpdate_name = row.querySelector('td:nth-child(2)').innerText;
+        const modalUpdate_description = row.querySelector('td:nth-child(3)').innerText;
+        const modalUpdate_quantity = row.querySelector('td:nth-child(4)').innerText;
+        const modalUpdate_price = row.querySelector('td:nth-child(5)').innerText;
+        const modalUpdate_discount = row.querySelector('td:nth-child(6)').innerText;
+        const modalUpdate_imgUrl = row.querySelector('td:nth-child(7)').innerText;
+        const modalUpdate_categoryId = row.querySelector('td:nth-child(9)').innerText;
+        const modalUpdate_brandId = row.querySelector('td:nth-child(10)').innerText;
+
+
+        // console.log("categoryId innerText: ", modalUpdate_categoryId); // debug line
+        // console.log("brandId innerText: ", modalUpdate_brandId); // debug line
+
+        const categoryDropdown = document.getElementById('categoryDropdownUpdate');
+        const categoryOption = categoryDropdown.querySelector(`option[id="${modalUpdate_categoryId}"]`);
+        console.log("categoryDropDown: ", categoryOption);
+        if (categoryOption) {
+            categoryOption.selected = true;
+        }
+
+        const brandDropdown = document.getElementById('brandDropDownUpdate');
+        const brandOption = brandDropdown.querySelector(`option[id="${modalUpdate_brandId}"]`);
+        console.log("brandDropdown: ", brandOption);
+        if (brandOption) {
+            brandOption.selected = true;
+        }
+        
+        // Populate modal with row data
+        document.getElementById('productId').innerText = modalUpdate_id;
+        console.log("id modalUpdate_id, ", modalUpdate_id);
+        document.getElementById('id').value = modalUpdate_id;
+        document.getElementById('pname').value = modalUpdate_name;
+        document.getElementById('description').value = modalUpdate_description;
+        document.getElementById('quantity').value = modalUpdate_quantity;
+        document.getElementById('price').value = modalUpdate_price;
+        document.getElementById('discount').value = modalUpdate_discount;
+        document.getElementById('imgUrl').value = modalUpdate_imgUrl;
+        
+
+        const myModal = bootstrap.Modal.getOrCreateInstance('#myModal');
+        window.addEventListener('DOMContentLoaded', () => {
+            myModal.show();
+        });
+    }
+
+    function openModalDelete(productId) {
+        // Find the row corresponding to the productId
+        const row = document.getElementById(productId).closest('tr');
+        
+        // Extract data from the row
+        const id = row.querySelector('td:nth-child(1)').innerText;
+        const isdeleted = row.querySelector('td:nth-child(11)').innerText;
+        console.log("const isdeleted: ", isdeleted);
+
+        
+        // Populate modal with row data
+        document.getElementById('delete_productId').innerText = id;
+        console.log("id product (deleted modal), ", id);
+        document.getElementById('isdeletedId').value = id;
+        document.getElementById('isdeleted').value = isdeleted;
+        console.log("test isdeleted: ", isdeleted);
+
+        if(isdeleted == 1){
+            document.getElementById('isdeleted').checked = true;
+        }else{
+            document.getElementById('isdeleted').checked = false;
+        }
+
+        const myModalDelete = bootstrap.Modal.getOrCreateInstance('#myModalDelete');
+        window.addEventListener('DOMContentLoaded', () => {
+            myModalDelete.show();
+        });
+    }
+
+    function openModalAdd() {
+        
+        const myModalDelete = bootstrap.Modal.getOrCreateInstance('#myModalAdd');
+        window.addEventListener('DOMContentLoaded', () => {
+            myModalDelete.show();
+        });
+    }
+
+    </script>
+    
+    <!-- Belongs to: modal on delete proudct -->
+    <script>
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            const checkbox = document.getElementById('isdeleted');
+            checkbox.addEventListener('change', function(){
+                
+                const value = this.checked ? 1 : 0;
+                console.log("checkbox: ", value);
+                if(value == 1 ){
+                    document.getElementById('isdeleted').value = 1;
+
+                }else{
+                    document.getElementById('isdeleted').value = 0;
+                }
+            });
+        });
+    </script>
+    
+    <!-- belongs to: Add product script -->
+    <script>
+        //dropDown in Add product
+        $(document).ready(function(){
+            $('#categoryDropdown').change(function(){
+                var selectOptionIdCategory = $(this).children('option:selected').attr('id');
+                console.log("valueOption Category: ", selectOptionIdCategory); // got the value :)
+                document.getElementById('categoryIdDropDown').value = selectOptionIdCategory;
+                //$('#categoryId').val(selectOptionId);
+            });
+           
+        });
+    
+        //dropDown in Add product
+        $(document).ready(function(){
+            $('#brandDropDown').change(function(){
+            var selectOptionIdBrand = $(this).children('option:selected').attr('id');
+            console.log("valueOption brand: ", selectOptionIdBrand); // got the value :)
+            document.getElementById('brandIdDropDown').value = selectOptionIdBrand;
+            //$('#categoryId').val(selectOptionId);
+            });
+        });
+    </script>
+
+<!-- belongs to: Update product script -->
+    <script>
+        //dropDown in Add product
+        $(document).ready(function(){
+            $('#categoryDropdownUpdate').change(function(){
+                var selectOptionIdCategoryUpdate = $(this).children('option:selected').attr('id');
+                console.log("valueOption categoryIdDropDownUpdate: ", selectOptionIdCategoryUpdate); // got the value :)
+                document.getElementById('categoryIdDropDownUpdate').value = selectOptionIdCategoryUpdate;
+                //$('#categoryId').val(selectOptionId);
+            });
+        
+        });
+
+        //dropDown in Add product
+        $(document).ready(function(){
+            $('#brandDropDownUpdate').change(function(){
+            var selectOptionIdBrandUpdate = $(this).children('option:selected').attr('id');
+            console.log("valueOption brandIdDropDownUpdate: ", selectOptionIdBrandUpdate); // got the value :)
+            document.getElementById('brandIdDropDownUpdate').value = selectOptionIdBrandUpdate;
+            //$('#categoryId').val(selectOptionId);
+            });
+        });
+    </script>
+    
+    
+    <%- include('./partials/head.ejs') %>
+    <link href="../../stylesheets/style.css" rel="stylesheet">
+</head>
+<body>
+<%- include('./partials/navbar.ejs') %>
+<br>
+<br>
+<div class="container-fluid mt-5">
+    <h2 class="p-3 text-center">Products</h2>
+    <div class="list-group">
+    <div>
+        <table class="table table-borderless">
+            <thead>
+            <tr class="custom-table">
+                <th scope="col">Product</th>
+                <th scope="col">Category</th>
+                <th scope="col">Brand</th>
+                
+                <th scope="col"><button class="btn-sm serach" type="submit" form="search" value="Submit">Search</button></th>
+                <form action="/admin/products" method="get" id="clear">    
+                <th scope="col"><button class="btn-sm clear" type="submit" form="clear" value="Submit">Clear</button></th>
+                </form>
+                <th scope="col"><button class="btn-sm option-update ModalAddClick" data-id="1" data-bs-toggle="modal" data-bs-target="#myModalAdd" id="">Add</button></th>
+            </tr>
+            </thead>
+            <form action="/admin/search" method="post" id="search" >
+            <tbody>
+                <tr class="custom-table">
+                    <th>
+                     <!-- <form> -->
+                        <input class="input-box" type="text" id="productName" name="productName"><br>
+                      <!-- </form> -->
+                    </th>
+                    <td>
+                        <!-- get data from api server Category-->
+                        
+                        <select name="category" id="category" onchange="syncDropdowns(this)">
+                            <option value="empty"></option>
+                            <%if (locals.DataCategory) { %>
+                                <% DataCategory.forEach(function(category) { %> 
+                                <option value="<%=category.categoryName%>"><%=category.categoryName%></option>
+                                <% }); %>
+                            <%}%>
+                          </select>
+                    </td>
+                    <td>
+                        <!-- get data from api server Brands -->
+                        <select name="brand" id="brand" onchange="syncDropdowns(this)">
+                            <option value="empty"></option>
+                            <%if (locals.DataBrands) { %>
+                                <% DataBrands.forEach(function(Brands) { %> 
+                                <option value="<%=Brands.brandName%>"><%=Brands.brandName%></option>
+                                <% }); %>
+                            <%}%>
+                          </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </form>
+        <input type="hidden" name="categoryName" id="categoryName">
+        <input type="hidden" name="brandName" id="brandName">
+    </div>
+    </div>
+</div>
+<br>
+<br>
+<div class="container-fluid mt-5">
+    <h2 class="p-3 text-center">Products</h2>
+    <div class="list-group">
+    <div>
+        <span>Press in table: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+          </svg> : <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+          </svg> [ Add Products, Delete[SOFT DELETE]] </span>
+        <table class="table table-bordered table-dark">
+            <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Price</th>
+                <th scope="col">Discount</th>
+                <th scope="col">ImgUrl</th>
+                <th scope="col">Img</th>
+                <th scope="col">categoryId</th>
+                <th scope="col">brandId</th>
+                <th scope="col">isdeleted</th>
+                <th scope="col">createadAt</th>
+                <th scope="col">updatedAt</th>
+                <th scope="col">Category</th>
+                <th scope="col">Brand</th>
+                <th scope="col">Option</th>
+            </tr>
+            </thead>
+            <tbody>
+            <%if (locals.DataProduct) { %>
+                <!-- < %var rowId = 1;%>  bad !! -->
+                <% DataProduct.forEach(function(products) { %> 
+                
+            <tr>
+                <!-- <td id="< %=rowId++%>">< %=products.productId%></td>  this is where the bugg was !!, this was wrong to use !!-->
+                <td id="<%=products.productId%>"><%=products.productId%></td>
+                <td><%=products.productName%></td>
+                <td><%=products.description%></td>
+                <td><%=products.quantity%></td>
+                <td><%=products.price%></td>
+                <td><%=products.discount%></td>
+                <td><%=products.imgUrl%></td>
+                <td><img src="<%=products.imgUrl%>" alt=""style="width:100px;height:100px;"></td>
+                <td><%=products.categoryId%></td>
+                <td><%=products.brandId%></td>
+                <td><% if(products.isdeleted == 0 ){%>
+                    <%=products.isdeleted%>
+                    <!-- <input type="hidden" id="deleted" name="deleted" value="< %=products.isdeleted%>"> -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                      </svg>
+            <%} else {%> 
+                    <%=products.isdeleted%>
+                    <!-- <input type="hidden" id="deleted" name="deleted" value="< %=products.isdeleted%>">  -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                      </svg>
+            <%}%></td>
+                <td><%=products.createdAt%></td>
+                <td><%=products.updatedAt%></td>
+                <td><%=products.categoryName%></td>
+                <td><%=products.brandName%></td> <!-- onclick change testing openForm( prooducts.productId )-->
+                <td><button class="btn-sm option-update ModalUpdateClick" data-id="1" data-bs-toggle="modal" data-bs-target="#myModal" id="<%=products.productId%>"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                  </svg></button>
+                    <button class="btn-sm option-remove ModalDeleteClick" data-id="1" data-bs-toggle="modal" data-bs-target="#myModalDelete" id="<%=products.productId%>"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                      </svg></button>
+                </td>
+            </tr>
+            <% }); %>
+            <%}%> 
+            </tbody>
+        </table>
+    </div>
+    </div>
+</div>
+<br>
+<!-- Modal Update -->
+<div class="modal modal-lg fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h2>
+                    Product ID: <span id="productId"></span>
+                </h2> 
+                <br>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+    <!-- Modal Body -->
+            <div class="modal-body modal-style-blue">
+                <br>
+                <span>To update: Fill in text box's (Change) or (leave as it, update will over write with same data)</span>
+                <br>
+                <span>Leave blank: No update!! if left as is, update will over write and give true to update!!</span>
+                <br>
+                
+                <form id="modalForm" action="/admin/products/update" method="post">
+                    
+                    <div class="mb-3">
+                        <!-- <label for="id">ProductId:</label> -->
+                        <input hidden="true" type="text" id="id" name="id" readonly><br>
+                    </div>
+                    <div class="mb-3">
+                        <label class="modal-form-label-update" for="id">Name:</label>
+                        <input class="modal-form-input-update" type="text" id="pname" name="pname"><br>
+
+                        <label class="modal-form-label-update" for="id">Description:</label>
+                        <input class="modal-form-input-update" type="text" id="description" name="description"><br>
+                    </div>
+                    <div class="mb-3">
+                        <label class="modal-form-label-update" for="id">Quantity:</label>
+                        <input class="modal-form-input-update" type="number" min="1" max="1000" id="quantity" name="quantity"><br>
+
+                        <label class="modal-form-label-update" for="id">Price:</label>
+                        <input class="modal-form-input-update" type="number" min="1" max="10000" id="price" name="price"><br>
+                    </div>
+                    <div class="mb-3">
+                        <label class="modal-form-label-update" for="id">Discount:</label>
+                        <input class="modal-form-input-update" type="number" min="0" max="100" id="discount" name="discount"><br>
+
+                        <label class="modal-form-label-update" for="id">ImgUrl:</label>
+                        <input class="modal-form-input-update" type="text" id="imgUrl" name="imgUrl"><br>
+
+                        <br>
+
+                        <label class="modal-form-label-update" for="id">CategoryId:</label>
+                        <!-- <input class="modal-form-input-update" type="number" min="1" max="1000" id="categoryId" name="categoryId"><br> -->
+
+                        <select name="categoryDropdownUpdate" id="categoryDropdownUpdate" required>
+                            <!-- <option value="">Empty</option> -->
+                            <%if (locals.DataCategory) { %>
+                                <% DataCategory.forEach(function(category) { %> 
+                                <option id="<%=category.categoryId%>" value="<%=category.categoryName%>"><%=category.categoryName%></option>
+                                <% }); %>
+                            <%}%>
+                          </select>
+                          <input hidden="true" type="number" id="categoryIdDropDownUpdate" name="categoryIdDropDownUpdate"><br>
+
+                        <br>
+                        <label class="modal-form-label-update" for="id">Brand:</label>
+
+                        <!-- <label class="modal-form-label-update" for="id">BrandId:</label> -->
+                        <!-- <input class="modal-form-input-update" type="number" min="1" max="1000" id="brandId" name="brandId"><br> -->
+
+                        <select name="brandDropDownUpdate" id="brandDropDownUpdate" required>
+                            <!-- <option value="">Empty</option> -->
+                            <%if (locals.DataBrands) { %>
+                                <% DataBrands.forEach(function(Brands) { %> 
+                                <option id="<%=Brands.brandId%>" value="<%=Brands.brandName%>"><%=Brands.brandName%></option>
+                                <% }); %>
+                            <%}%>
+                          </select>
+                          <input hidden="true" type="number" id="brandIdDropDownUpdate" name="brandIdDropDownUpdate"><br>
+
+                        
+
+                        
+                    </div>
+                </form>
+            </div>
+<!-- Modal Footer -->
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-primary" type="submit" form="modalForm" value="Submit">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<br>
+<!-- Modal Delete -->
+<!--//todo: we could update this, do it like we did with orders input hidden value and sett that from what the radio button value checked is etc revice code ?-->
+<div class="modal fade" id="myModalDelete" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h2>
+                    Product ID: <span id="delete_productId"></span>
+                </h2> 
+                <br>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+    <!-- Modal Body -->
+            <div class="modal-body modal-style-red">
+                <br>
+                <span>Info: Soft Delete/Activate Product</span>
+                <br>
+                <span>Slide Check: Green(slide to right) = Soft(Deleted)</span>
+                <br>
+                <span>Slide Check: Gray(slide to left) = Product Active</span>
+                
+                <form id="modalFormDelete" action="/admin/products/delete" method="post">
+                    
+                    <div class="mb-3">
+                        <!-- <label for="id">ProductId:</label> -->
+                        <input hidden="true" type="text" id="isdeletedId" name="isdeletedId" readonly><br>
+                    </div>
+                    <div class="mb-3">
+                        <label class="modal-form-label-delete" for="id">IsDeleted:</label>
+                        <div class="form-check form-switch">    
+                            <input class="modal-form-input-delete form-check-input" type="checkbox" role="switch" id="isdeleted" name="isdeleted" value="0">
+                            <!-- <input hidden="true" class="modal-form-input-delete" type="text" id="isdeleted" name="isdeleted"><br> -->
+                        </div>
+                        
+                    </div>
+                  
+                </form>
+            </div>
+<!-- Modal Footer -->
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-primary" type="submit" form="modalFormDelete" value="Submit">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<!-- Modal Add -->
+<div class="modal modal-lg fade" id="myModalAdd" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h2>
+                    ADD NEW PRODUCT
+                </h2> 
+                <br>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+    <!-- Modal Body -->
+            <div class="modal-body modal-style-green">
+                <br>
+                <form id="modalFormAdd" action="/admin/products/add" method="post">
+                    
+                    <div class="mb-3">
+                        <!-- <label for="id">ProductId:</label> -->
+                        <input hidden="true" type="text" id="isdeletedId" name="isdeletedId" readonly><br>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label class="modal-form-label-update" for="id">Name:</label>
+                        <input class="modal-form-input-update" type="text" id="productName" name="productName" required><br>
+
+                        <label class="modal-form-label-update" for="id">Description:</label>
+                        <input class="modal-form-input-update" type="text" id="description" name="description" required><br>
+                    </div>
+                    <div class="mb-3">
+                        <label class="modal-form-label-update" for="id">Quantity:</label>
+                        <input class="modal-form-input-update" type="number" min="1" max="1000" id="quantity" name="quantity" required><br>
+
+                        <label class="modal-form-label-update" for="id">Price:</label>
+                        <input class="modal-form-input-update" type="number" min="1" max="10000" id="price" name="price" required><br>
+                    </div>
+                    <div class="mb-3">
+                        <label class="modal-form-label-update" for="id">Discount:</label>
+                        <input class="modal-form-input-update" type="number" min="0" max="100" id="discount" name="discount" required><br>
+
+                        <label class="modal-form-label-update" for="id">ImgUrl:</label>
+                        <input class="modal-form-input-update" type="text" id="imgUrl" name="imgUrl" required><br>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="modal-form-label-update" for="id">Category:</label>
+                        
+
+                        <select name="categoryDropdown" id="categoryDropdown" required>
+                            <option value="">Choose Category</option>
+                            <%if (locals.DataCategory) { %>
+                                <% DataCategory.forEach(function(category) { %> 
+                                <option id="<%=category.categoryId%>" value="<%=category.categoryName%>"><%=category.categoryName%></option>
+                                <% }); %>
+                            <%}%>
+                          </select>
+                          <input hidden="true" type="number" id="categoryIdDropDown" name="categoryIdDropDown"><br>
+
+                        <br>
+                        <label class="modal-form-label-update" for="id">Brand:</label>
+
+                        <select name="brandDropDown" id="brandDropDown" required>
+                            <option value="">Choose Brand</option>
+                            <%if (locals.DataBrands) { %>
+                                <% DataBrands.forEach(function(Brands) { %> 
+                                <option id="<%=Brands.brandId%>" value="<%=Brands.brandName%>"><%=Brands.brandName%></option>
+                                <% }); %>
+                            <%}%>
+                          </select>
+                        <!-- <input class="modal-form-input-update" type="number" min="1" max="1000" id="brandId" name="brandId" required><br> -->
+                        <input hidden="true" type="number" id="brandIdDropDown" name="brandIdDropDown"><br>
+
+                        
+                    </div>
+
+                </form>
+            </div>
+<!-- Modal Footer -->
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-primary" type="submit" form="modalFormAdd" value="Submit">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<!-- < %- include('./partials/scripts.ejs') %> -->
+<!-- <script src="./script/common.js"></script> -->
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Popup Example</title>
+<style>
+    /* Styling for the button */
+    .open-popup-button {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    /* Styling for the pop-up container */
+    .popup-container {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        background-color: #f1f1f1;
+        border: 1px solid #ccc;
+        z-index: 1000; /* Ensure the pop-up is on top */
+    }
+    /* Styling for the form inside the pop-up */
+    .popup-form {
+        margin-bottom: 10px;
+    }
+    /* Styling for the buttons */
+    .popup-button {
+        padding: 10px 20px;
+        background-color: #008CBA;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+    /* Styling for the close button */
+    .close-button {
+        padding: 10px 20px;
+        background-color: #008CBA;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+</style>
+</head>
+<body>
+
+
+<button class="open-popup-button">Open Pop-up</button>
+
+
+<div class="popup-container">
+    
+    
+    
+    <form class="popup-form" action="/" method="post" autocomplete="off">
+        <label for="fname">First Name:</label><br>
+        <input type="text" id="fname" name="fname"><br>
+        <label for="lname">Last Name:</label><br>
+        <input type="text" id="lname" name="lname"><br><br>
+    </form>
+    <button class="close-button">Close</button>
+    <button class="popup-button">Button 1</button>
+    <button class="popup-button">Button 2</button>
+</div>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const openPopupButton = document.querySelector('.open-popup-button');
+    const popupContainer = document.querySelector('.popup-container');
+    const closeButton = document.querySelector('.close-button');
+
+
+    openPopupButton.addEventListener('click', function() {
+        popupContainer.style.display = 'block';
+    });
+
+
+    closeButton.addEventListener('click', function() {
+        popupContainer.style.display = 'none';
+    });
+});
+</script>
+
+</body>
+</html>
